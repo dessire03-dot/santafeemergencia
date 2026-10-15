@@ -10049,12 +10049,13 @@ function showConfirm(message){
 const memStore = {};
 const recCache = {};
 let _dbP = null;
+const DEFAULT_API = 'https://script.google.com/macros/s/AKfycbyrvLZqkefuCJeZhfzApUriOH6O4Q6pVrIVkiHDbhToYmwXQg6OukDexLobCn8ZynwNrw/exec';
 function getApi(){
   try{
     const u = new URLSearchParams(location.search).get('api');
     if(u){ try{ localStorage.setItem('santafe_api', u); }catch(e){} return u; }
-    return localStorage.getItem('santafe_api') || '';
-  }catch(e){ return ''; }
+    return localStorage.getItem('santafe_api') || DEFAULT_API;
+  }catch(e){ return DEFAULT_API; }
 }
 function setApi(u){ try{ if(u) localStorage.setItem('santafe_api', u); else localStorage.removeItem('santafe_api'); }catch(e){} }
 async function remote(req){
@@ -10331,7 +10332,7 @@ function renderRoleSelect(){
     const el = wrap.querySelector('#store-status'); if(!el) return;
     el.textContent = m==='mem' ? '⚠ Sin conexión a la base de datos: lo que registres NO se guardará. Configúrala abajo.' : (m==='remote' ? '✔ Conectado a Google Sheets: los datos se guardan y se comparten' : '✔ Datos compartidos entre dispositivos');
     el.style.color = m==='mem' ? 'var(--red)' : 'var(--green)';
-    if(m==='mem' || m==='remote'){
+    if(m==='mem' || (m==='remote' && /[?&]config/.test(location.search))){
       const box = document.createElement('div'); box.className='card'; box.style.cssText='max-width:640px;width:100%;margin-top:18px;';
       const cur = getApi();
       box.innerHTML = `<h2 style="font-size:14px;">⚙ Conexión con Google Sheets</h2>
